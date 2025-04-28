@@ -6,6 +6,16 @@
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
+export const theme = {
+  colors: {
+    primary: '#4F46E5',
+    accent: '#22D3EE',
+    background: '#F9FAFB',
+    text: '#111827',
+    card: '#FFFFFF',
+  },
+};
+
 export const Colors = {
   light: {
     text: '#11181C',
