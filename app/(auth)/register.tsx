@@ -1,33 +1,74 @@
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { router } from 'expo-router';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import supabase from '@/services/superbase';
+import { useSignUp } from '@clerk/clerk-expo';
 
 export default function Register() {
+  const { isLoaded, signUp, setActive } = useSignUp();
+  console.log('🚀 ~ Register ~ isLoaded:', isLoaded);
+  const router = useRouter();
+
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  async function signUpWithEmail() {
-    setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-    if (error) Alert.alert(error.message);
-    if (!session)
-      Alert.alert('Please check your inbox for email verification!');
-    setLoading(false);
+  const [pendingVerification, setPendingVerification] = useState(false);
+  const [code, setCode] = useState('');
+
+  // Handle submission of sign-up form
+  const onSignUpPress = async () => {
+    if (!isLoaded) return;
+    try {
+      await signUp.create({
+        emailAddress: email,
+        password,
+      });
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+      setPendingVerification(true);
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
+
+  // Handle submission of verification form
+  const onVerifyPress = async () => {
+    if (!isLoaded) return;
+
+    try {
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+      if (signUpAttempt.status === 'complete') {
+        await setActive({ session: signUpAttempt.createdSessionId });
+        router.replace('/(protected)/(tabs)');
+      } else {
+        console.error(JSON.stringify(signUpAttempt, null, 2));
+      }
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
+
+  if (pendingVerification) {
+    return (
+      <View className="flex-1 justify-center items-center px-4">
+        <Text>Verify your email</Text>
+        <TextInput
+          value={code}
+          placeholder="Enter your verification code"
+          onChangeText={(code) => setCode(code)}
+        />
+        <TouchableOpacity onPress={onVerifyPress}>
+          <Text>Verify</Text>
+        </TouchableOpacity>
+      </View>
+    );
   }
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Register</Text>
-
+    <View className="flex-1 justify-center items-center px-4">
+      <Text className="text-4xl font-bold my-6">Register</Text>
       <TextInput
-        style={styles.input}
+        className="w-full border-2 border-gray-300 rounded-lg p-4 mb-4"
         onChangeText={(text) => setEmail(text)}
         value={email}
         placeholder="email@address.com"
@@ -39,31 +80,23 @@ export default function Register() {
         value={password}
         secureTextEntry={true}
         autoCapitalize={'none'}
-        style={styles.input}
+        className="w-full border-2 border-gray-300 rounded-lg p-4 mb-4"
       />
 
-      <Button
-        title="Register"
+      <TouchableOpacity
+        className="bg-orange-400 py-4 px-6 items-center rounded-lg w-full"
         disabled={loading}
-        onPress={() => signUpWithEmail()}
-      />
+        onPress={onSignUpPress}
+      >
+        <Text className="text-white text-2xl font-medium">Register</Text>
+      </TouchableOpacity>
 
-      <Text style={styles.link} onPress={() => router.push('/(auth)')}>
-        Already have an account? Lgoin
+      <Text
+        className="text-blue-500 mt-5 text-center text-lg"
+        onPress={() => router.push('/(auth)')}
+      >
+        Already have an account? Login
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: 'center' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  link: { color: 'blue', marginTop: 10, textAlign: 'center' },
-});
