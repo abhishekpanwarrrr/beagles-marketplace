@@ -112,7 +112,6 @@ function InitialLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
   const { isLoaded } = useAuth();
-  console.log('🚀 ~ InitialLayout ~ isLoaded:', isLoaded);
   useEffect(() => {
     if (loaded && isLoaded) {
       SplashScreen.hideAsync();

@@ -1,5 +1,6 @@
 import { useAuth } from '@clerk/clerk-expo';
 import { Redirect, Slot, Stack } from 'expo-router';
+import { Text, View } from 'react-native';
 
 const ProtectedLayout = () => {
   const { isSignedIn } = useAuth();
@@ -8,7 +9,12 @@ const ProtectedLayout = () => {
     return <Redirect href="/(auth)" />;
   }
   return (
-    <Stack screenOptions={{ headerShown: false }}>
+    <Stack
+      screenOptions={{
+        headerShown: true,
+        animation: 'fade_from_bottom',
+      }}
+    >
       <Stack.Screen
         name="(tabs)"
         options={{
@@ -21,7 +27,13 @@ const ProtectedLayout = () => {
           headerShown: false,
         }}
       />
-      ``
+      <Stack.Screen
+        name="/Search"
+        options={{
+          headerTitleAlign: 'center',
+        }}
+      />
+      <Stack.Screen name="/Cart" />
     </Stack>
   );
 };
