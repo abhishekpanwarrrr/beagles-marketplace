@@ -1,4 +1,11 @@
-import { Text, TouchableOpacity, FlatList, View, Image } from 'react-native';
+import {
+  Text,
+  TouchableOpacity,
+  FlatList,
+  View,
+  Image,
+  Button,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -9,16 +16,16 @@ const Home = () => {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
 
-  useEffect(() => {
-    async function fetchData() {
-      const data = await getProducts();
-      setProducts(data);
-    }
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const data = await getProducts();
+  //     setProducts(data);
+  //   }
+  //   fetchData();
+  // }, []);
   return (
     <SafeAreaView className="flex-1 px-4">
-      <FlatList
+      {/* <FlatList
         data={products ?? []}
         keyExtractor={(item) => item?.id.toString()}
         renderItem={({ item }) => (
@@ -58,6 +65,11 @@ const Home = () => {
         ListHeaderComponent={
           <Text className="text-lg font-semibold">Available Products</Text>
         }
+      /> */}
+      <Button title="Cart" onPress={() => router.push('/(protected)/Cart')} />
+      <Button
+        title="Search"
+        onPress={() => router.push('/(protected)/Search')}
       />
     </SafeAreaView>
   );

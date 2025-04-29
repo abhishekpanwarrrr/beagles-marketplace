@@ -30,18 +30,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="sell"
+        name="wishlist"
         options={{
-          title: 'Sell',
+          title: 'Wishlist',
           tabBarIcon: ({ color, size }) => (
             <AntDesign name="skin" color={color} size={size} />
           ),
         }}
       />
       <Tabs.Screen
-        name="inbox"
+        name="transaction"
         options={{
-          title: 'Inbox',
+          title: 'Transactions',
           tabBarIcon: ({ color, size }) => (
             <Feather name="message-circle" color={color} size={size} />
           ),

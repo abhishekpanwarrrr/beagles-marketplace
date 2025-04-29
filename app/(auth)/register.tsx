@@ -1,7 +1,9 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useSignUp } from '@clerk/clerk-expo';
+import Icon from '@/assets/images/icon.png';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Register() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -66,7 +68,8 @@ export default function Register() {
   }
   return (
     <View className="flex-1 justify-center items-center px-4">
-      <Text className="text-4xl font-bold my-6">Register</Text>
+      <Image source={Icon} className="w-24 h-24 object-cover" />
+      <Text className="text-4xl font-bold mb-6">Register</Text>
       <TextInput
         className="w-full border-2 border-gray-300 rounded-lg p-4 mb-4"
         onChangeText={(text) => setEmail(text)}
@@ -84,11 +87,18 @@ export default function Register() {
       />
 
       <TouchableOpacity
-        className="bg-orange-400 py-4 px-6 items-center rounded-lg w-full"
+        className="rounded-lg w-full h-16 overflow-hidden "
         disabled={loading}
         onPress={onSignUpPress}
       >
-        <Text className="text-white text-2xl font-medium">Register</Text>
+        <LinearGradient
+          colors={['#fdba74', '#0d9488']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          className="flex-1 items-center justify-center"
+        >
+          <Text className="text-white text-xl font-semibold">Register</Text>
+        </LinearGradient>
       </TouchableOpacity>
 
       <Text
