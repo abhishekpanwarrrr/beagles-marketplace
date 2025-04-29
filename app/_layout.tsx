@@ -83,79 +83,39 @@
 //     </ThemeProvider>
 //   );
 // }
-
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
+import { ClerkLoaded, ClerkProvider, useAuth } from '@clerk/clerk-expo';
+import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 import './global.css';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import supabase from '@/services/superbase';
-import { Session } from '@supabase/supabase-js';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  return (
+    <ClerkProvider tokenCache={tokenCache}>
+      <ClerkLoaded>
+        <InitialLayout />
+        <StatusBar style="auto" />
+      </ClerkLoaded>
+    </ClerkProvider>
+  );
+}
+
+function InitialLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-
-  const [session, setSession] = useState<Session | null>(null);
-  console.log('🚀 ~ RootLayout ~ session:', session?.user?.id);
-
+  const { isLoaded } = useAuth();
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      },
-    );
-
-    // Cleanup listener when component unmounts
-    return () => {
-      authListener?.subscription?.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (loaded) {
+    if (loaded && isLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, session]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        {session && session.user?.id ? (
-          <>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="listings/[id]"
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen name="(admin)" options={{ headerShown: false }} />
-          </>
-        ) : (
-          <Stack.Screen name="/(auth)/" options={{ headerShown: false }} />
-        )}
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+  }, [loaded, isLoaded]);
+  return <Slot />;
 }

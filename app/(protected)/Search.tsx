@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 
-const Inbox = () => {
+const SearchPage = () => {
   return (
     <View>
-      <Text>Inbox</Text>
+      <Text>SearchPage</Text>
     </View>
   );
 };
 
-export default Inbox;
+export default SearchPage;

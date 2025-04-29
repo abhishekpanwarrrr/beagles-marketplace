@@ -1,85 +1,105 @@
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { router } from 'expo-router';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  Image,
+} from 'react-native';
+import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import supabase from '@/services/superbase';
+import { useSignIn } from '@clerk/clerk-expo';
+import Icon from '@/assets/images/icon.png';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function Login() {
+  const { signIn, setActive, isLoaded } = useSignIn();
+  const router = useRouter();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  async function signInWithEmail() {
+  const onSignInPress = async () => {
+    if (!isLoaded) return;
+    if (!email || !password) {
+      Alert.alert('Please fill in all fields');
+      return;
+    }
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-    if (error) Alert.alert(error.message);
-    setLoading(false);
-  }
-  async function signUpWithEmail() {
-    setLoading(true);
-    const {
-      data: { session },
-      error,
-    } = await supabase.auth.signUp({
-      email: email,
-      password: password,
-    });
-    if (error) Alert.alert(error.message);
-    if (!session)
-      Alert.alert('Please check your inbox for email verification!');
-    setLoading(false);
-  }
+    try {
+      const signInAttempt = await signIn.create({
+        identifier: email,
+        password,
+      });
+      if (signInAttempt.status === 'complete') {
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.replace('/(protected)/(tabs)');
+      } else {
+        console.error(JSON.stringify(signInAttempt, null, 2));
+      }
+    } catch (err) {
+      console.error(JSON.stringify(err, null, 2));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-
+    <View className="flex-1 justify-center items-center px-4">
+      <Image source={Icon} className="w-24 h-24 object-cover" />
+      <Text className="text-4xl font-bold mb-8">Login</Text>
       <TextInput
-        style={styles.input}
-        onChangeText={(text) => setEmail(text)}
         value={email}
-        placeholder="email@address.com"
-        autoCapitalize={'none'}
+        placeholder="Email"
+        onChangeText={(email) => setEmail(email)}
+        className="border border-gray-300 rounded-lg p-4 w-full mb-4"
+        autoCapitalize="none"
+        autoFocus={true}
+        autoComplete="email"
+        autoCorrect={false}
+        textContentType="emailAddress"
+        keyboardType="email-address"
+        returnKeyType="next"
       />
       <TextInput
-        placeholder="Password"
-        onChangeText={(text) => setPassword(text)}
         value={password}
-        secureTextEntry={true}
-        autoCapitalize={'none'}
-        style={styles.input}
+        placeholder="Password"
+        onChangeText={(password) => setPassword(password)}
+        className="border border-gray-300 rounded-lg p-4 w-full mb-4"
+        secureTextEntry
+        autoCapitalize="none"
+        autoComplete="password"
+        autoCorrect={false}
+        textContentType="password"
+        returnKeyType="done"
       />
-
-      <Button
-        title="Login"
+      <TouchableOpacity
         disabled={loading}
-        onPress={() => signInWithEmail()}
-      />
-
-      <Text style={styles.link} onPress={() => router.push('/(auth)/register')}>
-        Don't have an account? Register
-      </Text>
-
-      <Text
-        style={styles.link}
-        onPress={() => router.push('/(auth)/forgot-password')}
+        className="rounded-lg w-full h-16 overflow-hidden "
+        onPress={onSignInPress}
       >
-        Forgot Password?
-      </Text>
+        <LinearGradient
+          colors={['#0d9488', '#fdba74']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          className="flex-1 items-center justify-center"
+        >
+          <Text className="text-white text-xl font-semibold">
+            {loading ? (
+              <ActivityIndicator size={'small'} className="text-white" />
+            ) : (
+              'Login'
+            )}
+          </Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      <Link className="mt-10 text-lg" href="/(auth)/register" asChild>
+        <Text className="text-gray-500 underline">
+          Don't have an account? Register
+        </Text>
+      </Link>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: 'center' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  link: { color: 'blue', marginTop: 10, textAlign: 'center' },
-});
