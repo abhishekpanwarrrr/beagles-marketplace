@@ -13,20 +13,21 @@ import { useClerk, useUser } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
 import avatar from '../../../assets/images/avatar.png';
 import { useState } from 'react';
-import { Feather, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator } from 'react-native';
+import { parseISO, format, isToday, isYesterday } from 'date-fns';
 
 const Profile = () => {
   const router = useRouter();
   const { signOut } = useClerk();
   const { user, isLoaded } = useUser();
+  console.log('🚀 ~ Profile ~ user:', user);
   const [edit, setEdit] = useState<boolean>(false);
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  console.log('🚀 ~ Profile ~ user:', JSON.stringify(user, null, 2));
-  console.log('🚀 ~ Profile ~ isLoaded:', isLoaded);
+
   const handleSignOut = async () => {
     try {
       await signOut();
@@ -43,11 +44,13 @@ const Profile = () => {
     }
     try {
       setLoading(true);
-      await user?.update({
+      const result = await user?.update({
         firstName: firstName,
         lastName: lastName,
         username: username,
       });
+      console.log('🚀 ~ onUpdateUser ~ result:', result);
+      setEdit(false);
     } catch (error) {
       Alert.alert('Error', 'Unable to update user');
       console.log(error);
@@ -67,11 +70,22 @@ const Profile = () => {
 
     if (!result.canceled) {
       const base64 = `data:image/png;base64,${result.assets[0].base64}`;
-      user?.setProfileImage({
+      await user?.setProfileImage({
         file: base64,
       });
     }
   };
+  const date = user?.lastSignInAt ? new Date(user.lastSignInAt) : null;
+
+  console.log('date', date);
+  const formattedDate = date
+    ? isToday(date)
+      ? 'Today'
+      : isYesterday(date)
+        ? 'Yesterday'
+        : format(date, 'd MMM yyyy')
+    : 'N/A';
+
   return (
     <SafeAreaView className="flex-1 px-5 py-10">
       <ScrollView className="flex-1">
@@ -118,12 +132,27 @@ const Profile = () => {
               }}
             >
               <Text className="font-semibold text-base">
-                {user?.firstName ?? 'John doe'}
+                {user?.firstName ?? 'John'} {user?.lastName ?? 'Doe'}
               </Text>
               <Text>{user?.username ?? '@johndoe'}</Text>
               <Text className="text-gray-500 text-sm capitalize">
                 {user?.primaryEmailAddress?.emailAddress}
               </Text>
+            </View>
+          </View>
+          <View className="flex-row items-center gap-2 border-b border-gray-300 pb-1">
+            <View className="flex-1 flex-row items-center justify-between">
+              <Text className="text-gray-500 font-medium text-sm">
+                Last Login:
+              </Text>
+              <View className="flex-row items-center gap-2">
+                <Text className="text-black font-semibold text-sm">
+                  {formattedDate}
+                </Text>
+                <Text className="text-gray-500 text-sm">
+                  {date ? format(date, 'hh:mm a') : 'N/A'}
+                </Text>
+              </View>
             </View>
           </View>
           <TouchableOpacity
@@ -140,6 +169,7 @@ const Profile = () => {
             </View>
           </TouchableOpacity>
         </View>
+        {/* Editing  */}
         {edit && (
           <View className="mt-5 gap-3">
             <TextInput
@@ -180,6 +210,96 @@ const Profile = () => {
             </TouchableOpacity>
           </View>
         )}
+
+        {/* Settings Section */}
+        <View className="mt-5">
+          <Text className="text-lg font-semibold mb-3">Settings</Text>
+          <TouchableOpacity
+            onPress={() => {}}
+            className="flex-row items-center justify-between border-b border-gray-300 py-3"
+          >
+            <Text className="text-base">Settings</Text>
+            <Feather name="chevron-right" size={20} color="gray" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Addresses Section */}
+        <View className="mt-5">
+          <Text className="text-lg font-semibold mb-3">Addresses</Text>
+          {user?.addresses?.map((address, index) => (
+            <View
+              key={index}
+              className="border border-gray-300 rounded-lg p-3 mb-3"
+            >
+              <Text className="text-base font-medium">{address.label}</Text>
+              <Text className="text-gray-500">{address.details}</Text>
+              <View className="flex-row mt-3 gap-3">
+                <TouchableOpacity
+                  onPress={() => router.push(`/`)}
+                  className="flex-1 bg-blue-500 py-2 rounded-lg"
+                >
+                  <Text className="text-white text-center">Edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    Alert.alert(
+                      'Delete Address',
+                      'Are you sure you want to delete this address?',
+                      [
+                        { text: 'Cancel', style: 'cancel' },
+                        {
+                          text: 'Delete',
+                          style: 'destructive',
+                          onPress: async () => {
+                            try {
+                              // Replace with your custom API call or logic to delete the address
+                              await fetch(`/api/addresses/${address.id}`, {
+                                method: 'DELETE',
+                              })
+                                .then((response) => {
+                                  if (!response.ok) {
+                                    throw new Error('Failed to delete address');
+                                  }
+                                  Alert.alert('Success', 'Address deleted');
+                                })
+                                .catch((error) => {
+                                  Alert.alert(
+                                    'Error',
+                                    'Unable to delete address',
+                                  );
+                                });
+                              Alert.alert('Success', 'Address deleted');
+                            } catch (error) {
+                              Alert.alert('Error', 'Unable to delete address');
+                            }
+                          },
+                        },
+                      ],
+                    );
+                  }}
+                  className="flex-1 bg-red-500 py-2 rounded-lg"
+                >
+                  <Text className="text-white text-center">Delete</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+          <TouchableOpacity
+            onPress={() => router.push('/')}
+            className="bg-black py-3 rounded-3xl"
+          >
+            <Text className="text-white text-center">Add New Address</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Logout Button */}
+        <TouchableOpacity
+          onPress={handleSignOut}
+          className="flex-row items-center justify-between border px-3 bg-teal-500 border-gray-300 py-3 rounded-3xl mt-10"
+        >
+          <Text className="text-base text-white font-bold">Logout</Text>
+          <Feather name="log-out" size={20} color="white" />
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
