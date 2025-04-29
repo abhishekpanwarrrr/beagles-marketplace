@@ -1,6 +1,7 @@
 // api/products.ts
-import { collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import { products } from '@/data';
 
 export async function getProducts() {
   const productsRef = collection(db, 'products');
@@ -39,3 +40,14 @@ export async function getProductById(id: string) {
 //     console.error('Error uploading products:', error);
 //   }
 // };
+
+export async function getProductCategories() {
+  const productsRef = collection(db, 'products');
+  const snapshot = await getDocs(productsRef);
+
+  const categories = snapshot.docs.map((doc) => doc.data().category);
+
+  // Optional: remove duplicates
+  const uniqueCategories = [...new Set(categories)];
+  return uniqueCategories;
+}

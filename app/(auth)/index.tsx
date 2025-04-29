@@ -1,11 +1,11 @@
 import {
-  View,
   Text,
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
   Alert,
   Image,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -46,7 +46,7 @@ export default function Login() {
   };
 
   return (
-    <View className="flex-1 justify-center items-center px-4">
+    <KeyboardAvoidingView className="flex-1 justify-center items-center px-4">
       <Image source={Icon} className="w-24 h-24 object-cover" />
       <Text className="text-4xl font-bold mb-8">Login</Text>
       <TextInput
@@ -100,6 +100,6 @@ export default function Login() {
           Don't have an account? Register
         </Text>
       </Link>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

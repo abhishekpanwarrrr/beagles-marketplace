@@ -31,23 +31,13 @@ const ProductDetail = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <View className="bg-white h-20 flex-row items-center justify-between px-4 border-b border-gray-100 shadow-sm">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="absolute top-4 left-4 p-2 rounded-full flex-row items-center gap-3"
-        >
-          <Ionicons name="arrow-back" size={24} color={'#000'} />
-          <Text className="text-lg font-medium text-gray-800">Back</Text>
-        </TouchableOpacity>
-      </View>
-
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 20 }}
         className="bg-white"
         showsVerticalScrollIndicator={false}
       >
         {/* Product Title and Price */}
-        <View className="mt-6 mb-5">
+        <View className="mb-5">
           <Text className="text-3xl font-bold text-gray-900">
             {product.title}
           </Text>
@@ -103,7 +93,7 @@ const ProductDetail = () => {
                 Category
               </Text>
               <Text className="text-base text-gray-700 flex-1">
-                {product.category}
+                {/* {product.category} */}
               </Text>
             </View>
             <View className="flex-row border-b border-gray-100 pb-2">

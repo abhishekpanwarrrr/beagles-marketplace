@@ -1,6 +1,5 @@
 import { useAuth } from '@clerk/clerk-expo';
-import { Redirect, Slot, Stack } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Redirect, Stack } from 'expo-router';
 
 const ProtectedLayout = () => {
   const { isSignedIn } = useAuth();
@@ -22,7 +21,7 @@ const ProtectedLayout = () => {
         }}
       />
       <Stack.Screen
-        name="/product/[id]"
+        name="/(protected)/product/[id]"
         options={{
           headerShown: false,
         }}
