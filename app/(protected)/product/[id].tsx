@@ -29,101 +29,6 @@ const ProductDetail = () => {
   }
 
   return (
-    // <SafeAreaView className="flex-1 bg-white">
-    //   <View className="bg-gray-100 h-20 flex-row items-center justify-between px-4">
-    //     <TouchableOpacity
-    //       onPress={() => router.back()}
-    //       className="absolute top-4 left-4 p-2 rounded-full flex-row items-center gap-3"
-    //     >
-    //       <Ionicons name="arrow-back" size={24} color={'#000'} />
-    //       <Text className="text-lg font-semibold text-gray-800">Back</Text>
-    //     </TouchableOpacity>
-    //   </View>
-    //   <ScrollView contentContainerStyle={{ paddingHorizontal: 16 }}>
-    //     {/* Product Title and Price */}
-    //     <View className="mb-4">
-    //       <Text className="text-2xl font-bold">{product.title}</Text>
-    //       <Text className="text-lg text-green-600 font-semibold mt-2">
-    //         ${product.price}
-    //       </Text>
-    //       <Text className="text-sm text-gray-500 mt-1">
-    //         Rating: {product.rating} ★
-    //       </Text>
-    //     </View>
-
-    //     {/* Product Image */}
-    //     <View className="w-full h-64 rounded-lg overflow-hidden mb-6">
-    //       <Image
-    //         source={{ uri: product.images[0] }}
-    //         alt={product.title}
-    //         className="h-full w-full"
-    //         resizeMode="contain"
-    //       />
-    //     </View>
-
-    //     {/* Description */}
-    //     <View className="mb-6">
-    //       <Text className="text-xl font-semibold mb-2">Description</Text>
-    //       <Text className="text-base text-gray-700">{product.description}</Text>
-    //     </View>
-
-    //     {/* Product Info */}
-    //     <View className="mb-6">
-    //       <Text className="text-xl font-semibold mb-2">Product Info</Text>
-    //       <View className="space-y-2">
-    //         <Text className="text-base text-gray-700">
-    //           <Text className="font-semibold">Brand:</Text> {product.brand}
-    //         </Text>
-    //         <Text className="text-base text-gray-700">
-    //           <Text className="font-semibold">Category:</Text>{' '}
-    //           {product.category}
-    //         </Text>
-    //         <Text className="text-base text-gray-700">
-    //           <Text className="font-semibold">Stock:</Text> {product.stock}
-    //         </Text>
-    //         <Text className="text-base text-gray-700">
-    //           <Text className="font-semibold">Warranty:</Text>{' '}
-    //           {product.warrantyInformation}
-    //         </Text>
-    //         <Text className="text-base text-gray-700">
-    //           <Text className="font-semibold">Shipping:</Text>{' '}
-    //           {product.shippingInformation}
-    //         </Text>
-    //       </View>
-    //     </View>
-
-    //     {/* Tags */}
-    //     <View className="mb-6">
-    //       <Text className="text-xl font-semibold mb-2">Tags</Text>
-    //       <View className="flex-row flex-wrap gap-2">
-    //         {product.tags.map((tag, index) => (
-    //           <Text
-    //             key={index}
-    //             className="bg-gray-200 px-3 py-1 rounded-full text-gray-700 text-sm"
-    //           >
-    //             {tag}
-    //           </Text>
-    //         ))}
-    //       </View>
-    //     </View>
-
-    //     {/* Reviews */}
-    //     <View className="mb-10">
-    //       <Text className="text-xl font-semibold mb-2">Customer Reviews</Text>
-    //       {product.reviews?.length > 0 ? (
-    //         product.reviews.map((review, index) => (
-    //           <View key={index} className="mb-4 p-4 bg-gray-100 rounded-md">
-    //             <Text className="font-semibold">{review.reviewerName}</Text>
-    //             <Text className="text-sm text-gray-500">{review.rating} ★</Text>
-    //             <Text className="text-base mt-1">{review.comment}</Text>
-    //           </View>
-    //         ))
-    //       ) : (
-    //         <Text className="text-base text-gray-500">No reviews yet.</Text>
-    //       )}
-    //     </View>
-    //   </ScrollView>
-    // </SafeAreaView>
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
       <View className="bg-white h-20 flex-row items-center justify-between px-4 border-b border-gray-100 shadow-sm">
@@ -184,7 +89,7 @@ const ProductDetail = () => {
           <Text className="text-xl font-bold mb-4 text-gray-900">
             Product Details
           </Text>
-          <View className="space-y-3 bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+          <View className="space-y-3 bg-white border border-gray-50 rounded-xl p-4 shadow-sm">
             <View className="flex-row border-b border-gray-100 pb-2">
               <Text className="text-base font-semibold text-gray-700 w-1/3">
                 Brand
@@ -232,7 +137,7 @@ const ProductDetail = () => {
         <View className="mb-8">
           <Text className="text-xl font-bold mb-3 text-gray-900">Tags</Text>
           <View className="flex-row flex-wrap gap-2">
-            {product.tags.map((tag, index) => (
+            {product?.tags?.map((tag, index) => (
               <Text
                 key={index}
                 className="bg-gray-100 px-4 py-2 rounded-full text-gray-700 text-sm font-medium"
@@ -293,9 +198,11 @@ const ProductDetail = () => {
         </View>
 
         {/* Add to Cart Button - Fixed at bottom */}
-        <View className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-100 shadow-lg">
-          <TouchableOpacity className="bg-green-600 py-4 rounded-xl items-center">
-            <Text className="text-white font-bold text-lg">Add to Cart</Text>
+        <View className="absolute bottom-0 left-0 right-0 p-4 shadow-md">
+          <TouchableOpacity className="bg-teal-500 py-4 rounded-xl items-center">
+            <Text className="text-white font-semibold text-lg">
+              Add to Cart
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

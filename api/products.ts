@@ -1,7 +1,6 @@
 // api/products.ts
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-// import { products } from '@/data';
 
 export async function getProducts() {
   const productsRef = collection(db, 'products');
@@ -22,7 +21,6 @@ export async function getProductById(id: string) {
       ...doc.data(),
     }))
     .find((product) => String(product?.id) === id);
-  console.log('product', product);
 
   return product;
 }
