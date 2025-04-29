@@ -8,9 +8,8 @@ export default function Login() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  // Handle the submission of the sign-in form
+
   const { isSignedIn } = useAuth();
-  console.log('🚀 ~ Login ~ isSignedIn:', isSignedIn);
 
   const onSignInPress = async () => {
     if (!isLoaded) return;
