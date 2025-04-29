@@ -27,12 +27,14 @@ const Home = () => {
             className="w-full rounded-lg shadow-md p-4 flex flex-col"
           >
             <View className="w-[100%] h-40 rounded-md">
-              <Image
-                source={{ uri: item?.images[0] }}
-                alt={item?.title}
-                className="h-full w-full"
-                resizeMode="contain"
-              />
+              {item?.images?.length > 0 && (
+                <Image
+                  source={{ uri: item?.images[0] }}
+                  alt={item?.title}
+                  className="h-full w-full"
+                  resizeMode="contain"
+                />
+              )}
             </View>
             <View className="flex flex-col">
               <Text className="text-lg font-semibold text-gray-800">
