@@ -5,7 +5,8 @@ const ProductLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerTitle: 'Product Details',
       }}
     />
   );

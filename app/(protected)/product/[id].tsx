@@ -1,49 +1,109 @@
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getProductById } from '@/api/products';
 import { Product } from '@/types';
-import { Ionicons } from '@expo/vector-icons';
+import { Entypo, Ionicons } from '@expo/vector-icons';
+import Swiper from 'react-native-swiper';
 
 const ProductDetail = () => {
   const [product, setProduct] = useState<Product | null>(null);
-  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
   const { id } = useLocalSearchParams();
+  const router = useRouter();
+
   useEffect(() => {
     async function fetchData() {
-      const data = await getProductById(id as string);
-      console.log('Product Detail:', data);
-      //   @ts-ignore
-      setProduct(data);
+      try {
+        setLoading(true);
+        const data = await getProductById(id as string);
+        //   @ts-ignore
+        setProduct(data);
+      } catch (error) {
+        Alert.alert('Something went wrong!');
+      } finally {
+        setLoading(false);
+      }
     }
     fetchData();
   }, [id]);
 
-  if (!product) {
+  if (loading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center">
-        <Text className="text-lg font-semibold">Ahh something went wrong</Text>
-      </SafeAreaView>
+      <View className="flex-1 items-center justify-center z-50">
+        <ActivityIndicator size={'large'} color={'teal'} />
+      </View>
     );
   }
 
+  if (!product) {
+    return (
+      <SafeAreaView className="flex-1 flex-col justify-center items-center">
+        <Text className="text-lg font-semibold text-error">
+          Ahh something went wrong
+        </Text>
+        <TouchableOpacity
+          className="bg-black py-3 w-full mx-3"
+          onPress={() => router.replace('/(protected)/(tabs)')}
+        >
+          <Text className="text-white text-lg text-center">Back to home</Text>
+        </TouchableOpacity>
+      </SafeAreaView>
+    );
+  }
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <View className="flex-1 bg-white pb-10">
       {/* Header */}
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 20 }}
-        className="bg-white"
         showsVerticalScrollIndicator={false}
       >
+        {/* Product Image */}
+        <Swiper
+          className="w-full h-80 rounded-2xl overflow-hidden mb-8 bg-gray-50 shadow-md"
+          showsButtons={product?.images?.length > 1}
+        >
+          {product?.images?.map((item) => (
+            <View key={item} className="h-full w-full">
+              <Image
+                source={{ uri: product.images[0] }}
+                alt={product.title}
+                className="h-full w-full"
+                resizeMode="contain"
+              />
+            </View>
+          ))}
+        </Swiper>
+
+        <View className="flex-row item-center justify-end gap-4 border-b border-gray-200 pb-4 mb-2">
+          <TouchableOpacity className="border border-gray-300 rounded-full p-2">
+            <Ionicons name="heart-outline" size={20} color={'black'} />
+          </TouchableOpacity>
+          <TouchableOpacity className="border border-gray-300 rounded-full p-2">
+            <Entypo name="share" className="" size={20} color="black" />
+          </TouchableOpacity>
+        </View>
+
         {/* Product Title and Price */}
         <View className="mb-5">
-          <Text className="text-3xl font-bold text-gray-900">
-            {product.title}
-          </Text>
+          <View className="flex-row items-center justify-between mb-2">
+            <Text className="text-3xl font-bold text-gray-900">
+              {product.title}
+            </Text>
+            {/* Share Button */}
+          </View>
           <View className="flex-row items-center justify-between mt-2">
             <Text className="text-2xl text-green-600 font-bold">
-              ${product.price}
+              र {product.price}
             </Text>
             <View className="flex-row items-center bg-yellow-50 px-3 py-1 rounded-full">
               <Ionicons name="star" size={16} color="#F59E0B" />
@@ -52,16 +112,6 @@ const ProductDetail = () => {
               </Text>
             </View>
           </View>
-        </View>
-
-        {/* Product Image */}
-        <View className="w-full h-80 rounded-2xl overflow-hidden mb-8 bg-gray-50 shadow-md">
-          <Image
-            source={{ uri: product.images[0] }}
-            alt={product.title}
-            className="h-full w-full"
-            resizeMode="contain"
-          />
         </View>
 
         {/* Description */}
@@ -85,15 +135,15 @@ const ProductDetail = () => {
                 Brand
               </Text>
               <Text className="text-base text-gray-700 flex-1">
-                {product.brand}
+                {product?.brand ?? '-'}
               </Text>
             </View>
             <View className="flex-row border-b border-gray-100 pb-2">
               <Text className="text-base font-semibold text-gray-700 w-1/3">
                 Category
               </Text>
-              <Text className="text-base text-gray-700 flex-1">
-                {/* {product.category} */}
+              <Text className="text-base text-gray-700 flex-1 capitalize">
+                {Object.keys(product?.category || {})[0]}
               </Text>
             </View>
             <View className="flex-row border-b border-gray-100 pb-2">
@@ -186,17 +236,14 @@ const ProductDetail = () => {
             </View>
           )}
         </View>
-
-        {/* Add to Cart Button - Fixed at bottom */}
-        <View className="absolute bottom-0 left-0 right-0 p-4 shadow-md">
-          <TouchableOpacity className="bg-teal-500 py-4 rounded-xl items-center">
-            <Text className="text-white font-semibold text-lg">
-              Add to Cart
-            </Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
-    </SafeAreaView>
+      {/* Add to Cart Button - Fixed at bottom */}
+      <View className="absolute bottom-4 left-0 right-0 p-4 shadow-md">
+        <TouchableOpacity className="bg-teal-500 py-4 rounded-xl items-center">
+          <Text className="text-white font-semibold text-lg">Add to Cart</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 };
 

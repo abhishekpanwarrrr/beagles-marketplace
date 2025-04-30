@@ -1,9 +1,10 @@
-import { View, Image, Text } from 'react-native';
+import { View, Image, Text, TouchableOpacity } from 'react-native';
 import Logo from '@/assets/images/icon.png';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 
 const HomeHeader = () => {
+  const router = useRouter();
   return (
     <View className="">
       <View className="flex-row items-center justify-between">
@@ -27,12 +28,14 @@ const HomeHeader = () => {
               flex: 1,
             }}
           >
-            <Ionicons
-              name="bag-handle-outline"
-              size={34}
-              color="black"
-              className="border border-gray-400 py-1.5 px-2 rounded-lg"
-            />
+            <TouchableOpacity onPress={() => router.push('/cart')}>
+              <Ionicons
+                name="bag-handle-outline"
+                size={34}
+                color="black"
+                className="border border-gray-400 py-1.5 px-2 rounded-lg"
+              />
+            </TouchableOpacity>
             <Ionicons
               name="notifications-outline"
               size={34}
@@ -63,7 +66,7 @@ function AddressBar() {
 }
 function SearchBar() {
   return (
-    <Link href={'/(protected)/Search'}>
+    <Link href={'/(protected)/search'}>
       <View className="relative border flex-row border-gray-300 items-center justify-between px-2 py-1 rounded-md">
         <Ionicons
           name="search-outline"

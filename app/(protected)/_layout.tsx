@@ -10,29 +10,15 @@ const ProtectedLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerShown: true,
+        headerShown: false,
         animation: 'fade_from_bottom',
       }}
     >
-      <Stack.Screen
-        name="(tabs)"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="/(protected)/product/[id]"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="/Search"
-        options={{
-          headerTitleAlign: 'center',
-        }}
-      />
-      <Stack.Screen name="/Cart" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="/(protected)/product/[id]" />
+      <Stack.Screen name="/search" />
+      <Stack.Screen name="/cart" />
+      <Stack.Screen name="/checkout" />
     </Stack>
   );
 };
