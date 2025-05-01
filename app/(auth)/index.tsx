@@ -38,8 +38,8 @@ export default function Login() {
       } else {
         console.error(JSON.stringify(signInAttempt, null, 2));
       }
-    } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
+    } catch (err: any) {
+      Alert.alert(err?.errors[0]?.longMessage);
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,7 @@ export default function Login() {
           end={{ x: 1, y: 0 }}
           className="flex-1 items-center justify-center"
         >
-          <Text className="text-white text-xl font-semibold">
+          <Text className="text-white text-xl font-semibold text-center py-4">
             {loading ? (
               <ActivityIndicator size={'small'} className="text-white" />
             ) : (

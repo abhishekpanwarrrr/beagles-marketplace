@@ -3,6 +3,7 @@ import React from 'react';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { useRouter } from 'expo-router';
+import { Link } from 'expo-router';
 
 const data = {
   docId: '2mUtfHNr6V0QesouuSIA',
@@ -114,12 +115,13 @@ const Cart = () => {
         </TouchableOpacity>
       </View>
       <View className="absolute bottom-4 left-0 right-0 p-4 shadow-md">
-        <TouchableOpacity
-          onPress={() => router.push('/(protected)/checkout')}
+        <Link
+          href={'/(protected)/checkout'}
+          // onPress={() => router.push('/(protected)/checkout')}
           className="bg-teal-500 py-4 rounded-xl items-center"
         >
           <Text className="text-white font-semibold text-lg">Checkout</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );

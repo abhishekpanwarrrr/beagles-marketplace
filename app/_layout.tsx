@@ -1,5 +1,6 @@
 import { ClerkLoaded, ClerkProvider, useAuth } from '@clerk/clerk-expo';
-import { tokenCache } from '@clerk/clerk-expo/token-cache';
+import * as SecureStore from 'expo-secure-store';
+import { TokenCache } from '@clerk/clerk-expo';
 import { useFonts } from 'expo-font';
 import { Slot } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -10,13 +11,15 @@ import './global.css';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
+export const tokenCache: TokenCache = {
+  getToken: SecureStore.getItemAsync,
+  saveToken: SecureStore.setItemAsync,
+};
 export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache}>
       <ClerkLoaded>
         <InitialLayout />
-        <StatusBar style="auto" />
       </ClerkLoaded>
     </ClerkProvider>
   );
@@ -28,9 +31,20 @@ function InitialLayout() {
   });
   const { isLoaded } = useAuth();
   useEffect(() => {
+    console.log('Fonts and auth loaded, hiding splash screen');
     if (loaded && isLoaded) {
-      SplashScreen.hideAsync();
+      // SplashScreen.hideAsync();
+      SplashScreen.hideAsync().catch((e) => {
+        console.error('Error hiding splash:', e);
+      });
     }
   }, [loaded, isLoaded]);
-  return <Slot />;
+  if (!isLoaded || !loaded) return null; // Ensures UI does not render too early
+
+  return (
+    <>
+      <Slot />
+      <StatusBar style="auto" />
+    </>
+  );
 }

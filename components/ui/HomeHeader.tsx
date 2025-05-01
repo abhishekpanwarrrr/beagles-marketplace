@@ -12,8 +12,8 @@ const HomeHeader = () => {
           <Image
             source={Logo}
             style={{
-              width: 90,
-              height: 90,
+              width: 70,
+              height: 70,
               objectFit: 'cover',
             }}
           />
@@ -31,14 +31,14 @@ const HomeHeader = () => {
             <TouchableOpacity onPress={() => router.push('/cart')}>
               <Ionicons
                 name="bag-handle-outline"
-                size={34}
+                size={20}
                 color="black"
                 className="border border-gray-400 py-1.5 px-2 rounded-lg"
               />
             </TouchableOpacity>
             <Ionicons
               name="notifications-outline"
-              size={34}
+              size={20}
               color="black"
               className="border border-gray-400 py-1.5 px-2 rounded-lg"
             />
